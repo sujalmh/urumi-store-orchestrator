@@ -2,6 +2,11 @@
 
 Provision isolated WooCommerce stores on Kubernetes with a FastAPI backend, Celery workers, Helm charts, and a Next.js dashboard.
 
+## Live Demo
+
+- **Frontend UI**: https://frontend-henna-mu-66.vercel.app/
+- **Backend**: Deployed on Google Kubernetes Engine (GKE)
+
 ## What This Project Does
 
 - Create, provision, and delete WooCommerce stores per tenant
@@ -69,7 +74,7 @@ sequenceDiagram
 - Redis
 - PostgreSQL
 - Helm
-- Kubernetes (k3d/k3s)
+- Kubernetes (GKE / k3d / k3s)
 
 ### 2) Backend + Workers
 
