@@ -164,7 +164,7 @@ spec:
             sleep 5
           done
 
-          echo "Creating sample product..."
+          echo "Creating sample products..."
           PRODUCT_COUNT=$(timeout 60 $WP_INT wc product list --sku=demo-product --user="$WORDPRESS_ADMIN_USER" --format=json 2>/dev/null | grep -c '"id"' || true)
           if [ "$PRODUCT_COUNT" = "0" ]; then
             for i in 1 2 3; do
@@ -187,6 +187,18 @@ spec:
               sleep 5
             done
           fi
+
+          for i in 1 2 3 4; do
+            SKU="demo-$(head -c 6 /dev/urandom | tr -dc 'a-z0-9' | head -c 6)"
+            timeout 60 $WP_INT wc product create \
+              --name="Sample Item $i" \
+              --type=simple \
+              --regular_price=$((5 + i * 3)) \
+              --status=publish \
+              --sku="$SKU" \
+              --user="$WORDPRESS_ADMIN_USER" \
+              --porcelain >/dev/null 2>&1 || true
+          done
 
           # Restore external URL after WC setup
           $WP_EXT option update siteurl "$WP_EXTERNAL_URL" >/dev/null 2>&1 || true
