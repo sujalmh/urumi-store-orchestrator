@@ -180,18 +180,18 @@ kubectl get pods -n <store-namespace>
 
 ### Store Provisioning Status
 
-![Provisioning Store](screenshots/provisioning-store.png)
+![Provisioning Store](./screenshots/provisioning-store.png)
 *Store in provisioning state*
 
-![Ready Store](screenshots/ready-store.png)
+![Ready Store](./screenshots/ready-store.png)
 *Store ready with access URL*
 
 ### Store Actions
 
-![Delete Store](screenshots/delete-store.png)
+![Delete Store](./screenshots/delete-store.png)
 *Deleting a store*
 
 ### WooCommerce Shop
 
-![WooCommerce Shop](screenshots/woocommerce-shop.png)
+![WooCommerce Shop](./screenshots/woocommerce-shop.png)
 *Live WooCommerce storefront*
