@@ -178,6 +178,11 @@ kubectl get pods -n <store-namespace>
 
 ## Screenshots
 
+### Dashboard Overview
+
+![Store Overview](./screenshots/store-overview.png)
+*Main dashboard showing all stores*
+
 ### Store Provisioning Status
 
 ![Provisioning Store](./screenshots/provisioning-store.png)
