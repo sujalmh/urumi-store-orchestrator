@@ -1,0 +1,532 @@
+ 
+ -------------- celery@LAPTOP-P1VSP5H2 v5.4.0 (opalescent)
+--- ***** ----- 
+-- ******* ---- Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.41 2026-02-13 16:17:18
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         provisioning:0x739e65ac4d40
+- ** ---------- .> transport:   redis://localhost:6379/0
+- ** ---------- .> results:     redis://localhost:6379/0
+- *** --- * --- .> concurrency: 12 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . app.tasks.store_tasks.delete_store_task
+  . app.tasks.store_tasks.provision_store_task
+
+[2026-02-13 16:17:21,300: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-02-13 16:17:21,306: INFO/MainProcess] mingle: searching for neighbors
+[2026-02-13 16:17:22,329: INFO/MainProcess] mingle: all alone
+[2026-02-13 16:17:22,370: INFO/MainProcess] celery@LAPTOP-P1VSP5H2 ready.
+[2026-02-13 16:17:22,383: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[ba903cb6-38a8-482b-903e-8b3d50d23352] received
+[2026-02-13 16:17:22,387: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[b82a4b55-853f-4ac1-b447-f51e1b859d61] received
+[2026-02-13 16:17:22,392: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 16:17:22,396: INFO/ForkPoolWorker-1] provision_store.start
+[2026-02-13 16:17:22,474: INFO/ForkPoolWorker-8] provision_store.missing
+[2026-02-13 16:17:22,478: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[ba903cb6-38a8-482b-903e-8b3d50d23352] succeeded in 0.09265967400278896s: None
+[2026-02-13 16:17:22,490: INFO/ForkPoolWorker-1] provision_store.ensure_namespace
+[2026-02-13 16:17:22,520: INFO/ForkPoolWorker-1] provision_store.helm_install
+[2026-02-13 16:18:38,478: INFO/ForkPoolWorker-1] provision_store.ready
+[2026-02-13 16:18:38,481: INFO/ForkPoolWorker-1] Task app.tasks.store_tasks.provision_store_task[b82a4b55-853f-4ac1-b447-f51e1b859d61] succeeded in 76.09703983500003s: None
+[2026-02-13 16:22:06,846: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[86685d3a-82c8-48cb-8773-80395c0337d3] received
+[2026-02-13 16:22:06,849: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 16:22:06,893: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 16:22:06,939: INFO/ForkPoolWorker-8] provision_store.helm_install
+[2026-02-13 16:24:06,999: ERROR/ForkPoolWorker-8] provision_store.error
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    return self._run(command, timeout=120)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 35, in _run
+    result = subprocess.run(command, capture_output=True, text=True, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 2114, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1253, in _check_timeout
+    raise TimeoutExpired(
+subprocess.TimeoutExpired: Command '['helm', 'upgrade', '--install', 'store-75d56b5b-a4e3-4c1a-addd-945a8de4dc58', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-75d56b5b-a4e3-4c1a-addd-945a8de4dc58', '-f', '/tmp/tmpa1wy8q4v.json']' timed out after 120 seconds
+[2026-02-13 16:24:07,036: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[86685d3a-82c8-48cb-8773-80395c0337d3] received
+[2026-02-13 16:24:07,078: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[86685d3a-82c8-48cb-8773-80395c0337d3] retry: Retry in 180s: TimeoutExpired(['helm', 'upgrade', '--install', 'store-75d56b5b-a4e3-4c1a-addd-945a8de4dc58', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-75d56b5b-a4e3-4c1a-addd-945a8de4dc58', '-f', '/tmp/tmpa1wy8q4v.json'], 120)
+[2026-02-13 16:26:52,451: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[8e68ff11-ad33-467f-aadc-76b82241986d] received
+[2026-02-13 16:26:52,454: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 16:26:52,482: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 16:26:52,519: INFO/ForkPoolWorker-8] provision_store.helm_install
+[2026-02-13 16:27:07,020: INFO/ForkPoolWorker-1] provision_store.start
+[2026-02-13 16:27:07,040: INFO/ForkPoolWorker-1] provision_store.missing
+[2026-02-13 16:27:07,046: INFO/ForkPoolWorker-1] Task app.tasks.store_tasks.provision_store_task[86685d3a-82c8-48cb-8773-80395c0337d3] succeeded in 0.02865890999964904s: None
+[2026-02-13 16:28:52,564: ERROR/ForkPoolWorker-8] provision_store.error
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    return self._run(command, timeout=120)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 35, in _run
+    result = subprocess.run(command, capture_output=True, text=True, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 2114, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1253, in _check_timeout
+    raise TimeoutExpired(
+subprocess.TimeoutExpired: Command '['helm', 'upgrade', '--install', 'store-52aa8fce-d74d-4ee4-8725-94a54fad2580', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-52aa8fce-d74d-4ee4-8725-94a54fad2580', '-f', '/tmp/tmpxho5cz6s.json']' timed out after 120 seconds
+[2026-02-13 16:28:52,574: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[8e68ff11-ad33-467f-aadc-76b82241986d] received
+[2026-02-13 16:28:52,600: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[8e68ff11-ad33-467f-aadc-76b82241986d] retry: Retry in 180s: TimeoutExpired(['helm', 'upgrade', '--install', 'store-52aa8fce-d74d-4ee4-8725-94a54fad2580', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-52aa8fce-d74d-4ee4-8725-94a54fad2580', '-f', '/tmp/tmpxho5cz6s.json'], 120)
+[2026-02-13 16:30:57,440: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[96ab20a6-3668-4f34-9218-4ec224ec1eb3] received
+[2026-02-13 16:30:57,444: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 16:30:57,470: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 16:30:57,503: INFO/ForkPoolWorker-8] provision_store.helm_install
+[2026-02-13 16:31:52,565: INFO/ForkPoolWorker-1] provision_store.start
+[2026-02-13 16:31:52,577: INFO/ForkPoolWorker-1] provision_store.missing
+[2026-02-13 16:31:52,581: INFO/ForkPoolWorker-1] Task app.tasks.store_tasks.provision_store_task[8e68ff11-ad33-467f-aadc-76b82241986d] succeeded in 0.018375954001385253s: None
+[2026-02-13 16:32:57,608: ERROR/ForkPoolWorker-8] provision_store.error
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    return self._run(command, timeout=120)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 35, in _run
+    result = subprocess.run(command, capture_output=True, text=True, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 2114, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1253, in _check_timeout
+    raise TimeoutExpired(
+subprocess.TimeoutExpired: Command '['helm', 'upgrade', '--install', 'store-52fe67f6-f940-4e34-b4f9-3d25dfed7fa5', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-52fe67f6-f940-4e34-b4f9-3d25dfed7fa5', '-f', '/tmp/tmp8jh2fw7m.json']' timed out after 120 seconds
+[2026-02-13 16:32:57,621: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[96ab20a6-3668-4f34-9218-4ec224ec1eb3] received
+[2026-02-13 16:32:57,646: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[96ab20a6-3668-4f34-9218-4ec224ec1eb3] retry: Retry in 180s: TimeoutExpired(['helm', 'upgrade', '--install', 'store-52fe67f6-f940-4e34-b4f9-3d25dfed7fa5', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-52fe67f6-f940-4e34-b4f9-3d25dfed7fa5', '-f', '/tmp/tmp8jh2fw7m.json'], 120)
+[2026-02-13 16:34:41,557: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[64eda112-bde8-4e64-aac9-6f543c1beba8] received
+[2026-02-13 16:34:41,560: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 16:34:41,589: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 16:34:41,626: INFO/ForkPoolWorker-8] provision_store.helm_install
+[2026-02-13 16:35:57,626: INFO/ForkPoolWorker-1] provision_store.start
+[2026-02-13 16:35:57,680: INFO/ForkPoolWorker-1] provision_store.missing
+[2026-02-13 16:35:57,690: INFO/ForkPoolWorker-1] Task app.tasks.store_tasks.provision_store_task[96ab20a6-3668-4f34-9218-4ec224ec1eb3] succeeded in 0.07295258799786097s: None
+[2026-02-13 16:36:41,669: ERROR/ForkPoolWorker-8] provision_store.error
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    return self._run(command, timeout=120)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 35, in _run
+    result = subprocess.run(command, capture_output=True, text=True, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 2114, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1253, in _check_timeout
+    raise TimeoutExpired(
+subprocess.TimeoutExpired: Command '['helm', 'upgrade', '--install', 'store-2ddb5ddb-70ea-43b1-b2bc-acc405762800', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-2ddb5ddb-70ea-43b1-b2bc-acc405762800', '-f', '/tmp/tmp4f796i5r.json']' timed out after 120 seconds
+[2026-02-13 16:36:41,707: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[64eda112-bde8-4e64-aac9-6f543c1beba8] received
+[2026-02-13 16:36:41,753: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[64eda112-bde8-4e64-aac9-6f543c1beba8] retry: Retry in 180s: TimeoutExpired(['helm', 'upgrade', '--install', 'store-2ddb5ddb-70ea-43b1-b2bc-acc405762800', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-2ddb5ddb-70ea-43b1-b2bc-acc405762800', '-f', '/tmp/tmp4f796i5r.json'], 120)
+[2026-02-13 16:39:41,176: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[5660ea0a-c31c-4b7d-a317-1693553035a6] received
+[2026-02-13 16:39:41,185: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 16:39:41,251: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 16:39:41,325: INFO/ForkPoolWorker-8] provision_store.helm_install
+[2026-02-13 16:39:41,681: INFO/ForkPoolWorker-1] provision_store.start
+[2026-02-13 16:39:41,703: INFO/ForkPoolWorker-1] provision_store.missing
+[2026-02-13 16:39:41,708: INFO/ForkPoolWorker-1] Task app.tasks.store_tasks.provision_store_task[64eda112-bde8-4e64-aac9-6f543c1beba8] succeeded in 0.030904748000466498s: None
+[2026-02-13 16:41:41,429: ERROR/ForkPoolWorker-8] provision_store.error
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    return self._run(command, timeout=120)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 35, in _run
+    result = subprocess.run(command, capture_output=True, text=True, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 2114, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1253, in _check_timeout
+    raise TimeoutExpired(
+subprocess.TimeoutExpired: Command '['helm', 'upgrade', '--install', 'store-0aac9d30-50ef-48f8-8e3e-03353fafd10c', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-0aac9d30-50ef-48f8-8e3e-03353fafd10c', '-f', '/tmp/tmp0ccwjzt4.json']' timed out after 120 seconds
+[2026-02-13 16:41:41,447: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[5660ea0a-c31c-4b7d-a317-1693553035a6] received
+[2026-02-13 16:41:41,475: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[5660ea0a-c31c-4b7d-a317-1693553035a6] retry: Retry in 180s: TimeoutExpired(['helm', 'upgrade', '--install', 'store-0aac9d30-50ef-48f8-8e3e-03353fafd10c', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-0aac9d30-50ef-48f8-8e3e-03353fafd10c', '-f', '/tmp/tmp0ccwjzt4.json'], 120)
+[2026-02-13 16:44:41,436: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 16:44:41,481: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 16:44:41,528: INFO/ForkPoolWorker-8] provision_store.helm_install
+[2026-02-13 16:44:42,311: ERROR/ForkPoolWorker-8] provision_store.error
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    return self._run(command, timeout=120)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 37, in _run
+    raise RuntimeError(result.stderr.strip() or "Helm command failed")
+RuntimeError: Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
+[2026-02-13 16:44:42,324: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[5660ea0a-c31c-4b7d-a317-1693553035a6] received
+[2026-02-13 16:44:42,431: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[5660ea0a-c31c-4b7d-a317-1693553035a6] retry: Retry in 180s: RuntimeError('Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress')
+[2026-02-13 16:45:30,960: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[bad47e2d-3b96-4bfe-8a4e-9dcca7e75c8f] received
+[2026-02-13 16:45:30,963: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 16:45:30,995: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 16:45:31,040: INFO/ForkPoolWorker-8] provision_store.helm_install
+[2026-02-13 16:47:31,081: ERROR/ForkPoolWorker-8] provision_store.error
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    return self._run(command, timeout=120)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 35, in _run
+    result = subprocess.run(command, capture_output=True, text=True, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 2114, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1253, in _check_timeout
+    raise TimeoutExpired(
+subprocess.TimeoutExpired: Command '['helm', 'upgrade', '--install', 'store-882f6a8f-378b-4acc-856d-ae901f73a390', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-882f6a8f-378b-4acc-856d-ae901f73a390', '-f', '/tmp/tmp4y71sof9.json']' timed out after 120 seconds
+[2026-02-13 16:47:31,100: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[bad47e2d-3b96-4bfe-8a4e-9dcca7e75c8f] received
+[2026-02-13 16:47:31,135: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[bad47e2d-3b96-4bfe-8a4e-9dcca7e75c8f] retry: Retry in 180s: TimeoutExpired(['helm', 'upgrade', '--install', 'store-882f6a8f-378b-4acc-856d-ae901f73a390', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-882f6a8f-378b-4acc-856d-ae901f73a390', '-f', '/tmp/tmp4y71sof9.json'], 120)
+[2026-02-13 16:47:42,316: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 16:47:42,327: INFO/ForkPoolWorker-8] provision_store.missing
+[2026-02-13 16:47:42,332: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[5660ea0a-c31c-4b7d-a317-1693553035a6] succeeded in 0.018173270997067448s: None
+[2026-02-13 16:50:31,084: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 16:50:31,366: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 16:50:31,388: INFO/ForkPoolWorker-8] provision_store.helm_install
+[2026-02-13 16:50:32,662: ERROR/ForkPoolWorker-8] provision_store.error
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    return self._run(command, timeout=120)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 37, in _run
+    raise RuntimeError(result.stderr.strip() or "Helm command failed")
+RuntimeError: Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
+[2026-02-13 16:50:32,674: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[bad47e2d-3b96-4bfe-8a4e-9dcca7e75c8f] received
+[2026-02-13 16:50:32,699: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[bad47e2d-3b96-4bfe-8a4e-9dcca7e75c8f] retry: Retry in 180s: RuntimeError('Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress')
+[2026-02-13 16:53:32,670: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 16:53:32,732: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 16:53:32,758: INFO/ForkPoolWorker-8] provision_store.helm_install
+[2026-02-13 16:53:34,703: ERROR/ForkPoolWorker-8] provision_store.error
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    return self._run(command, timeout=120)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 37, in _run
+    raise RuntimeError(result.stderr.strip() or "Helm command failed")
+RuntimeError: Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
+[2026-02-13 16:53:34,719: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[bad47e2d-3b96-4bfe-8a4e-9dcca7e75c8f] received
+[2026-02-13 16:53:34,750: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[bad47e2d-3b96-4bfe-8a4e-9dcca7e75c8f] retry: Retry in 180s: RuntimeError('Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress')
+[2026-02-13 16:56:34,710: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 16:56:34,740: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 16:56:34,755: INFO/ForkPoolWorker-8] provision_store.helm_install
+[2026-02-13 16:56:35,846: ERROR/ForkPoolWorker-8] provision_store.error
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    return self._run(command, timeout=120)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 37, in _run
+    raise RuntimeError(result.stderr.strip() or "Helm command failed")
+RuntimeError: Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
+[2026-02-13 16:56:35,889: ERROR/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[bad47e2d-3b96-4bfe-8a4e-9dcca7e75c8f] raised unexpected: RuntimeError('Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress')
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/.venv/lib/python3.12/site-packages/celery/app/trace.py", line 453, in trace_task
+    R = retval = fun(*args, **kwargs)
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/s/urumi/backend/.venv/lib/python3.12/site-packages/celery/app/trace.py", line 736, in __protected_call__
+    return self.run(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 143, in provision_store_task
+    self.retry(exc=exc)
+  File "/mnt/s/urumi/backend/.venv/lib/python3.12/site-packages/celery/app/task.py", line 736, in retry
+    raise_with_context(exc)
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    return self._run(command, timeout=120)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 37, in _run
+    raise RuntimeError(result.stderr.strip() or "Helm command failed")
+RuntimeError: Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
+[2026-02-13 17:03:07,470: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[c6f264ff-a818-4a0f-ae3f-a905d18b2d20] received
+[2026-02-13 17:06:07,439: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 17:06:07,551: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 17:06:07,590: INFO/ForkPoolWorker-8] provision_store.helm_install
+[2026-02-13 17:06:09,012: ERROR/ForkPoolWorker-8] provision_store.error
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    return self._run(command, timeout=120)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 37, in _run
+    raise RuntimeError(result.stderr.strip() or "Helm command failed")
+RuntimeError: Error: create: failed to create: secrets "sh.helm.release.v1.store-190e197a-8d4e-4658-8412-cc32ca45f9b2.v1" is forbidden: unable to create new content in namespace store-190e197a-8d4e-4658-8412-cc32ca45f9b2 because it is being terminated
+[2026-02-13 17:06:09,083: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[c6f264ff-a818-4a0f-ae3f-a905d18b2d20] retry: Retry in 180s: RuntimeError('Error: create: failed to create: secrets "sh.helm.release.v1.store-190e197a-8d4e-4658-8412-cc32ca45f9b2.v1" is forbidden: unable to create new content in namespace store-190e197a-8d4e-4658-8412-cc32ca45f9b2 because it is being terminated')
+[2026-02-13 17:08:57,319: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[842abcaa-4e4f-44bd-bc62-904d3a47bcef] received
+[2026-02-13 17:11:57,310: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 17:11:57,326: INFO/ForkPoolWorker-8] provision_store.missing
+[2026-02-13 17:11:57,329: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[842abcaa-4e4f-44bd-bc62-904d3a47bcef] succeeded in 0.023429107997799292s: None
+[2026-02-13 17:12:07,102: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[f2694ce8-b036-4943-b3f1-b3872b103609] received
+[2026-02-13 17:12:07,105: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 17:12:07,138: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 17:12:07,176: INFO/ForkPoolWorker-8] provision_store.helm_install
+[2026-02-13 17:14:07,288: ERROR/ForkPoolWorker-8] provision_store.error
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    return self._run(command, timeout=120)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 35, in _run
+    result = subprocess.run(command, capture_output=True, text=True, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 2114, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1253, in _check_timeout
+    raise TimeoutExpired(
+subprocess.TimeoutExpired: Command '['helm', 'upgrade', '--install', 'store-d51047cf-b2fd-45ac-a3fa-bce2ee13de9f', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-d51047cf-b2fd-45ac-a3fa-bce2ee13de9f', '-f', '/tmp/tmphx820rtw.json']' timed out after 120 seconds
+[2026-02-13 17:14:07,363: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[f2694ce8-b036-4943-b3f1-b3872b103609] retry: Retry in 180s: TimeoutExpired(['helm', 'upgrade', '--install', 'store-d51047cf-b2fd-45ac-a3fa-bce2ee13de9f', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-d51047cf-b2fd-45ac-a3fa-bce2ee13de9f', '-f', '/tmp/tmphx820rtw.json'], 120)
+[2026-02-13 17:16:58,655: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[72be1eaa-d706-44ab-8ad7-09e4c99ddd5b] received
+[2026-02-13 17:16:58,659: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 17:16:58,693: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 17:16:58,724: INFO/ForkPoolWorker-8] provision_store.helm_install
+[2026-02-13 17:18:55,034: INFO/ForkPoolWorker-8] provision_store.ready
+[2026-02-13 17:18:55,038: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[72be1eaa-d706-44ab-8ad7-09e4c99ddd5b] succeeded in 116.38518920299975s: None
+[2026-02-13 17:27:15,591: INFO/MainProcess] Task app.tasks.store_tasks.delete_store_task[1d267eac-609e-43f9-b152-fa3c9f2b67e3] received
+[2026-02-13 17:27:15,598: INFO/ForkPoolWorker-8] delete_store.start
+[2026-02-13 17:27:15,630: INFO/ForkPoolWorker-8] delete_store.helm_uninstall
+[2026-02-13 17:27:16,486: INFO/ForkPoolWorker-8] delete_store.wait_namespace
+[2026-02-13 17:31:41,874: INFO/ForkPoolWorker-8] delete_store.done
+[2026-02-13 17:31:41,880: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.delete_store_task[1d267eac-609e-43f9-b152-fa3c9f2b67e3] succeeded in 266.29912141500245s: None
+[2026-02-13 18:14:12,035: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[1c4610cc-6f56-4dfe-9174-11cc831ff2f9] received
+[2026-02-13 18:17:12,059: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 18:17:12,768: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 18:17:12,962: INFO/ForkPoolWorker-8] provision_store.helm_install
+[2026-02-13 18:17:14,353: ERROR/ForkPoolWorker-8] provision_store.error
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    "20m",
+       ^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 37, in _run
+    result = subprocess.run(command, capture_output=True, text=True, timeout=timeout)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
+[2026-02-13 18:17:14,475: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[1c4610cc-6f56-4dfe-9174-11cc831ff2f9] received
+[2026-02-13 18:17:14,542: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[1c4610cc-6f56-4dfe-9174-11cc831ff2f9] retry: Retry in 180s: RuntimeError('Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress')
+[2026-02-13 18:20:14,436: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 18:20:14,532: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 18:20:14,612: INFO/ForkPoolWorker-8] provision_store.helm_install
+[2026-02-13 18:21:48,713: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[ff0c10f4-1ef7-4f7b-90db-f065eb5a08e6] received
+[2026-02-13 18:21:48,985: INFO/ForkPoolWorker-1] provision_store.start
+[2026-02-13 18:21:49,977: INFO/ForkPoolWorker-1] provision_store.ensure_namespace
+[2026-02-13 18:21:50,295: INFO/ForkPoolWorker-1] provision_store.helm_install
+[2026-02-13 18:22:14,733: ERROR/ForkPoolWorker-8] provision_store.error
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    "20m",
+       ^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 35, in _run
+    @staticmethod
+                 ^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 2114, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1253, in _check_timeout
+    raise TimeoutExpired(
+subprocess.TimeoutExpired: Command '['helm', 'upgrade', '--install', 'store-8faab840-218d-4255-866b-434b9e60ee32', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-8faab840-218d-4255-866b-434b9e60ee32', '-f', '/tmp/tmpmqci9isa.json']' timed out after 120 seconds
+[2026-02-13 18:22:14,809: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[1c4610cc-6f56-4dfe-9174-11cc831ff2f9] received
+[2026-02-13 18:22:14,860: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[1c4610cc-6f56-4dfe-9174-11cc831ff2f9] retry: Retry in 180s: TimeoutExpired(['helm', 'upgrade', '--install', 'store-8faab840-218d-4255-866b-434b9e60ee32', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-8faab840-218d-4255-866b-434b9e60ee32', '-f', '/tmp/tmpmqci9isa.json'], 120)
+[2026-02-13 18:23:50,456: ERROR/ForkPoolWorker-1] provision_store.error
+Traceback (most recent call last):
+  File "/mnt/s/urumi/backend/app/tasks/store_tasks.py", line 118, in provision_store_task
+    helm.install(str(store.helm_release_name), settings.helm_chart_path, str(store.namespace), values_path)
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 19, in install
+    "20m",
+       ^^^^
+  File "/mnt/s/urumi/backend/app/services/helm_client.py", line 35, in _run
+    @staticmethod
+                 ^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 2114, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+  File "/home/smh01/.pyenv/versions/3.12.2/lib/python3.12/subprocess.py", line 1253, in _check_timeout
+    raise TimeoutExpired(
+subprocess.TimeoutExpired: Command '['helm', 'upgrade', '--install', 'store-83296034-5c53-4d9f-b821-0732acd08ce0', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-83296034-5c53-4d9f-b821-0732acd08ce0', '-f', '/tmp/tmprk_e36ji.json']' timed out after 120 seconds
+[2026-02-13 18:23:50,939: INFO/ForkPoolWorker-1] Task app.tasks.store_tasks.provision_store_task[ff0c10f4-1ef7-4f7b-90db-f065eb5a08e6] retry: Retry in 180s: TimeoutExpired(['helm', 'upgrade', '--install', 'store-83296034-5c53-4d9f-b821-0732acd08ce0', '/mnt/s/urumi/helm/woocommerce-store', '-n', 'store-83296034-5c53-4d9f-b821-0732acd08ce0', '-f', '/tmp/tmprk_e36ji.json'], 120)
+[2026-02-13 18:25:14,787: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 18:25:14,826: INFO/ForkPoolWorker-8] provision_store.missing
+[2026-02-13 18:25:14,829: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[1c4610cc-6f56-4dfe-9174-11cc831ff2f9] succeeded in 0.048798488001921214s: None
+[2026-02-13 18:30:48,728: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[ff0c10f4-1ef7-4f7b-90db-f065eb5a08e6] received
+[2026-02-13 18:33:44,252: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 18:33:44,378: INFO/ForkPoolWorker-8] provision_store.missing
+[2026-02-13 18:33:44,386: INFO/ForkPoolWorker-8] Task app.tasks.store_tasks.provision_store_task[ff0c10f4-1ef7-4f7b-90db-f065eb5a08e6] succeeded in 0.17585452499770327s: None
+
+worker: Warm shutdown (MainProcess)
+ 
+ -------------- celery@LAPTOP-P1VSP5H2 v5.4.0 (opalescent)
+--- ***** ----- 
+-- ******* ---- Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.41 2026-02-13 19:04:01
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         provisioning:0x70db9ac79b80
+- ** ---------- .> transport:   redis://localhost:6379/0
+- ** ---------- .> results:     redis://localhost:6379/0
+- *** --- * --- .> concurrency: 12 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . app.tasks.store_tasks.delete_store_task
+  . app.tasks.store_tasks.provision_store_task
+
+[2026-02-13 19:04:06,819: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-02-13 19:04:06,854: INFO/MainProcess] mingle: searching for neighbors
+[2026-02-13 19:04:07,985: INFO/MainProcess] mingle: all alone
+[2026-02-13 19:04:08,088: INFO/MainProcess] celery@LAPTOP-P1VSP5H2 ready.
+[2026-02-13 19:04:45,629: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[8d0184ec-9134-498e-b9ee-d73042b07106] received
+[2026-02-13 19:04:45,652: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 19:04:45,877: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 19:04:45,931: INFO/ForkPoolWorker-8] provision_store.helm_install
+ 
+ -------------- celery@LAPTOP-P1VSP5H2 v5.4.0 (opalescent)
+--- ***** ----- 
+-- ******* ---- Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.41 2026-02-13 19:10:14
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         provisioning:0x7a8d0c6a0770
+- ** ---------- .> transport:   redis://localhost:6379/0
+- ** ---------- .> results:     redis://localhost:6379/0
+- *** --- * --- .> concurrency: 12 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . app.tasks.store_tasks.delete_store_task
+  . app.tasks.store_tasks.provision_store_task
+
+[2026-02-13 19:10:20,453: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-02-13 19:10:20,518: INFO/MainProcess] mingle: searching for neighbors
+[2026-02-13 19:10:21,575: INFO/MainProcess] mingle: all alone
+[2026-02-13 19:10:21,648: INFO/MainProcess] celery@LAPTOP-P1VSP5H2 ready.
+[2026-02-13 19:10:21,657: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[45ec6b44-2840-4726-aa3d-3ea2258e2392] received
+[2026-02-13 19:10:21,671: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 19:10:21,814: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 19:10:21,854: INFO/ForkPoolWorker-8] provision_store.helm_install
+ 
+ -------------- celery@LAPTOP-P1VSP5H2 v5.4.0 (opalescent)
+--- ***** ----- 
+-- ******* ---- Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.41 2026-02-13 19:15:17
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         provisioning:0x7016b4637bc0
+- ** ---------- .> transport:   redis://localhost:6379/0
+- ** ---------- .> results:     redis://localhost:6379/0
+- *** --- * --- .> concurrency: 12 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . app.tasks.store_tasks.delete_store_task
+  . app.tasks.store_tasks.provision_store_task
+
+[2026-02-13 19:15:24,964: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-02-13 19:15:24,978: INFO/MainProcess] mingle: searching for neighbors
+[2026-02-13 19:15:26,048: INFO/MainProcess] mingle: all alone
+[2026-02-13 19:15:26,124: INFO/MainProcess] celery@LAPTOP-P1VSP5H2 ready.
+[2026-02-13 19:15:26,137: INFO/MainProcess] Task app.tasks.store_tasks.provision_store_task[ea0b7b73-9a21-479f-86b2-6f7d08036338] received
+[2026-02-13 19:15:26,149: INFO/ForkPoolWorker-8] provision_store.start
+[2026-02-13 19:15:26,396: INFO/ForkPoolWorker-8] provision_store.ensure_namespace
+[2026-02-13 19:15:26,479: INFO/ForkPoolWorker-8] provision_store.helm_install
+ 
+ -------------- celery@LAPTOP-P1VSP5H2 v5.4.0 (opalescent)
+--- ***** ----- 
+-- ******* ---- Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.41 2026-02-13 19:29:44
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         provisioning:0x72c49c15f500
+- ** ---------- .> transport:   redis://localhost:6379/0
+- ** ---------- .> results:     redis://localhost:6379/0
+- *** --- * --- .> concurrency: 12 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . app.tasks.store_tasks.delete_store_task
+  . app.tasks.store_tasks.provision_store_task
+
+[2026-02-13 19:29:47,873: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-02-13 19:29:47,883: INFO/MainProcess] mingle: searching for neighbors
+[2026-02-13 19:29:48,956: INFO/MainProcess] mingle: all alone
+[2026-02-13 19:29:49,008: INFO/MainProcess] celery@LAPTOP-P1VSP5H2 ready.

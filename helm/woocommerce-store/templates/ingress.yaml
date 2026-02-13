@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wordpress-ingress
+  namespace: {{ .Values.namespace.name }}
+{{- if .Values.ingress.tls.enabled }}
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.issuer }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+{{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+{{- if .Values.ingress.tls.enabled }}
+  tls:
+  - hosts:
+    - {{ .Values.domain }}
+    secretName: {{ printf "%s-tls" .Values.storeName }}
+{{- end }}
+  rules:
+  - host: {{ .Values.domain }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: wordpress
+            port:
+              number: 80

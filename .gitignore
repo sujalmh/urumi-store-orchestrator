@@ -1,0 +1,15 @@
+session.json
+.store_error.json
+.store_ready.json
+.store_response.json
+.store_token
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+.pytest_cache/

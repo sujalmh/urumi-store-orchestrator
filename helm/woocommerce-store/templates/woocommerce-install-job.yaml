@@ -1,0 +1,275 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: woocommerce-install
+  namespace: {{ .Values.namespace.name }}
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: 5
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      labels:
+        app: woocommerce-install
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: store-sa
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+      - name: wp-cli
+        image: {{ .Values.wordpress.wpCliImage }}
+        env:
+        - name: WP_CLI_ALLOW_ROOT
+          value: "1"
+        - name: WORDPRESS_SITE_URL
+          value: {{ .Values.wordpress.siteUrl }}
+        - name: WORDPRESS_SITE_TITLE
+          value: {{ .Values.wordpress.siteTitle }}
+        - name: WORDPRESS_ADMIN_USER
+          value: {{ .Values.wordpress.adminUser }}
+        - name: WORDPRESS_ADMIN_PASSWORD
+          value: {{ .Values.wordpress.adminPassword }}
+        - name: WORDPRESS_ADMIN_EMAIL
+          value: {{ .Values.wordpress.adminEmail }}
+        - name: WORDPRESS_DB_HOST
+          value: mysql:3306
+        - name: WORDPRESS_DB_NAME
+          value: {{ .Values.mysql.database }}
+        - name: WORDPRESS_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: user
+        - name: WORDPRESS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        command:
+        - /bin/sh
+        - -c
+        - |
+          set -euo pipefail
+          set -x
+          WP_PATH="/var/www/html"
+          # Use external URL for core install, internal URL for WC CLI calls
+          WP_INTERNAL_URL="http://wordpress"
+          WP_EXTERNAL_URL="$WORDPRESS_SITE_URL"
+          WP_EXT="wp --path=$WP_PATH --url=$WP_EXTERNAL_URL"
+          WP_INT="wp --path=$WP_PATH --url=$WP_INTERNAL_URL"
+          START_TS=$(date +%s)
+          MAX_WAIT=600
+
+          while true; do
+            if nc -z mysql 3306 >/dev/null 2>&1; then
+              break
+            fi
+            NOW_TS=$(date +%s)
+            if [ $((NOW_TS - START_TS)) -gt $MAX_WAIT ]; then
+              echo "mysql wait timeout"
+              exit 1
+            fi
+            sleep 5
+          done
+
+          while true; do
+            if $WP_EXT core is-installed >/dev/null 2>&1; then
+              break
+            fi
+            NOW_TS=$(date +%s)
+            if [ $((NOW_TS - START_TS)) -gt $MAX_WAIT ]; then
+              echo "core install timeout"
+              exit 1
+            fi
+            if [ -f "$WP_PATH/wp-config.php" ]; then
+              if ! $WP_EXT core install \
+                --title="$WORDPRESS_SITE_TITLE" \
+                --admin_user="$WORDPRESS_ADMIN_USER" \
+                --admin_password="$WORDPRESS_ADMIN_PASSWORD" \
+                --admin_email="$WORDPRESS_ADMIN_EMAIL" \
+                --skip-email >/dev/null 2>&1; then
+                echo "core install failed"
+              fi
+            fi
+            sleep 5
+          done
+
+          while true; do
+            if [ -d "$WP_PATH/wp-content" ] && [ -w "$WP_PATH/wp-content" ]; then
+              break
+            fi
+            sleep 5
+          done
+
+          if ! mkdir -p "$WP_PATH/wp-content/upgrade"; then
+            echo "upgrade dir create failed"
+            exit 1
+          fi
+
+          if $WP_EXT plugin is-installed woocommerce >/dev/null 2>&1; then
+            $WP_EXT plugin activate woocommerce --user="$WORDPRESS_ADMIN_USER" || {
+              echo "woocommerce activate failed"; exit 1; }
+          else
+            $WP_EXT plugin install woocommerce --activate --user="$WORDPRESS_ADMIN_USER" || {
+              echo "woocommerce install failed"; exit 1; }
+          fi
+
+          # Temporarily switch siteurl/home to internal service for REST-based WC CLI
+          $WP_EXT option update siteurl "$WP_INTERNAL_URL" >/dev/null 2>&1 || true
+          $WP_EXT option update home "$WP_INTERNAL_URL" >/dev/null 2>&1 || true
+
+          # Ensure permalinks for REST API routes
+          echo "Configuring permalinks..."
+          timeout 30 $WP_INT rewrite structure "/%postname%/" --hard >/dev/null 2>&1 || {
+            echo "Warning: permalink structure update failed (non-fatal)"; }
+          timeout 30 $WP_INT rewrite flush --hard >/dev/null 2>&1 || {
+            echo "Warning: permalink flush failed (non-fatal)"; }
+
+          # Wait for WooCommerce REST to be responsive
+          echo "Waiting for WooCommerce REST API..."
+          READY=0
+          for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
+            if timeout 10 $WP_INT wc payment_gateway list --user="$WORDPRESS_ADMIN_USER" >/dev/null 2>&1; then
+              READY=1
+              break
+            fi
+            sleep 5
+          done
+          if [ "$READY" != "1" ]; then
+            echo "Warning: WooCommerce REST API not ready, proceeding anyway"
+          fi
+
+          # Run WooCommerce setup with timeout to prevent hanging
+          echo "Setting up WooCommerce pages..."
+          for i in 1 2 3; do
+            if timeout 60 $WP_INT wc tool run install_pages --user="$WORDPRESS_ADMIN_USER"; then
+              break
+            fi
+            echo "Warning: woocommerce pages install failed (attempt $i)"
+            sleep 5
+          done
+
+          echo "Enabling COD payment gateway..."
+          for i in 1 2 3; do
+            if timeout 60 $WP_INT wc payment_gateway update cod --enabled=true --user="$WORDPRESS_ADMIN_USER"; then
+              break
+            fi
+            echo "Warning: cod enable failed (attempt $i)"
+            sleep 5
+          done
+
+          echo "Creating sample product..."
+          PRODUCT_COUNT=$(timeout 60 $WP_INT wc product list --sku=demo-product --user="$WORDPRESS_ADMIN_USER" --format=json 2>/dev/null | grep -c '"id"' || true)
+          if [ "$PRODUCT_COUNT" = "0" ]; then
+            for i in 1 2 3; do
+              if timeout 90 $WP_INT wc product create \
+                --name="Sample Product" \
+                --type=simple \
+                --regular_price=10 \
+                --status=publish \
+                --sku=demo-product \
+                --user="$WORDPRESS_ADMIN_USER" \
+                --porcelain; then
+                break
+              fi
+              PRODUCT_COUNT=$(timeout 20 $WP_INT wc product list --sku=demo-product --user="$WORDPRESS_ADMIN_USER" --format=json 2>/dev/null | grep -c '"id"' || true)
+              if [ "$PRODUCT_COUNT" != "0" ]; then
+                echo "Product created after timeout"
+                break
+              fi
+              echo "Warning: product create failed (attempt $i)"
+              sleep 5
+            done
+          fi
+
+          # Restore external URL after WC setup
+          $WP_EXT option update siteurl "$WP_EXTERNAL_URL" >/dev/null 2>&1 || true
+          $WP_EXT option update home "$WP_EXTERNAL_URL" >/dev/null 2>&1 || true
+
+          echo "WooCommerce setup completed successfully"
+          exit 0
+            NOW_TS=$(date +%s)
+            if [ $((NOW_TS - START_TS)) -gt $MAX_WAIT ]; then
+              echo "mysql wait timeout"
+              exit 1
+            fi
+            sleep 5
+          done
+
+          while true; do
+            if $WP core is-installed >/dev/null 2>&1; then
+              break
+            fi
+            NOW_TS=$(date +%s)
+            if [ $((NOW_TS - START_TS)) -gt $MAX_WAIT ]; then
+              echo "core install timeout"
+              exit 1
+            fi
+            if [ -f "$WP_PATH/wp-config.php" ]; then
+              if ! $WP core install \
+                --title="$WORDPRESS_SITE_TITLE" \
+                --admin_user="$WORDPRESS_ADMIN_USER" \
+                --admin_password="$WORDPRESS_ADMIN_PASSWORD" \
+                --admin_email="$WORDPRESS_ADMIN_EMAIL" \
+                --skip-email >/dev/null 2>&1; then
+                echo "core install failed"
+              fi
+            fi
+            sleep 5
+          done
+
+          while true; do
+            if [ -d "$WP_PATH/wp-content" ] && [ -w "$WP_PATH/wp-content" ]; then
+              break
+            fi
+            sleep 5
+          done
+
+          if ! mkdir -p "$WP_PATH/wp-content/upgrade"; then
+            echo "upgrade dir create failed"
+            exit 1
+          fi
+
+          if $WP plugin is-active woocommerce >/dev/null 2>&1; then
+            exit 0
+          fi
+
+          if $WP plugin is-installed woocommerce >/dev/null 2>&1; then
+            $WP plugin activate woocommerce --user="$WORDPRESS_ADMIN_USER" || {
+              echo "woocommerce activate failed"; exit 1; }
+          else
+            $WP plugin install woocommerce --activate --user="$WORDPRESS_ADMIN_USER" || {
+              echo "woocommerce install failed"; exit 1; }
+          fi
+
+          $WP wc tool run install_pages --user="$WORDPRESS_ADMIN_USER" >/dev/null 2>&1 || {
+            echo "woocommerce pages install failed"; exit 1; }
+
+          $WP wc payment_gateway update cod --enabled=true --user="$WORDPRESS_ADMIN_USER" >/dev/null 2>&1 || {
+            echo "cod enable failed"; exit 1; }
+
+          PRODUCT_ID=$($WP wc product list --sku=demo-product --format=ids --user="$WORDPRESS_ADMIN_USER" 2>/dev/null || true)
+          if [ -z "$PRODUCT_ID" ]; then
+            $WP wc product create \
+              --name="Sample Product" \
+              --type=simple \
+              --regular_price=10 \
+              --status=publish \
+              --sku=demo-product \
+              --user="$WORDPRESS_ADMIN_USER" \
+              --porcelain >/dev/null 2>&1 || {
+                echo "product create failed"; exit 1; }
+          fi
+        volumeMounts:
+        - name: wordpress-storage
+          mountPath: /var/www/html
+      volumes:
+      - name: wordpress-storage
+        persistentVolumeClaim:
+          claimName: wordpress-pvc

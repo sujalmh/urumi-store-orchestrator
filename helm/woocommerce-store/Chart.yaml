@@ -1,0 +1,7 @@
+apiVersion: v2
+name: woocommerce-store
+description: Helm chart for isolated WooCommerce store
+type: application
+icon: https://woocommerce.com/wp-content/themes/woo/images/logo-woocommerce.svg
+version: 0.1.0
+appVersion: "1.0"

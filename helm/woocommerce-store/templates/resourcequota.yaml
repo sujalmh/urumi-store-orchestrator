@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: store-quota
+  namespace: {{ .Values.namespace.name }}
+spec:
+  hard:
+    requests.cpu: {{ .Values.resourceQuota.cpu }}
+    requests.memory: {{ .Values.resourceQuota.memory }}
+    requests.storage: {{ .Values.resourceQuota.storage }}
+    pods: {{ .Values.resourceQuota.pods }}

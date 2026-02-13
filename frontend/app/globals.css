@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --card: #ffffff;
+}
+
+body {
+  font-family: var(--font-body);
+  background: linear-gradient(180deg, #f7f3ee 0%, #ece8e1 100%);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+}

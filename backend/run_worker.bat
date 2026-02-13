@@ -1,0 +1,3 @@
+@echo off
+echo Starting Celery Worker with solo pool for Windows compatibility...
+celery -A app.tasks.celery_app worker --loglevel=info --pool=solo
