@@ -186,6 +186,8 @@ def delete_store_task(self, store_id: str):
         helm.uninstall(str(store.helm_release_name), str(store.namespace))
 
         k8s = K8sClient(settings.kubeconfig_path)
+        logger.info("delete_store.delete_namespace", extra={"namespace": store.namespace})
+        k8s.delete_namespace(str(store.namespace))
         logger.info("delete_store.wait_namespace", extra={"namespace": store.namespace})
         k8s.wait_for_namespace_deletion(str(store.namespace))
 

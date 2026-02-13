@@ -44,6 +44,14 @@ class K8sClient:
         body = client.V1Namespace(metadata=client.V1ObjectMeta(name=namespace))
         self.core.create_namespace(body)
 
+    def delete_namespace(self, namespace: str):
+        try:
+            self.core.delete_namespace(namespace)
+        except client.ApiException as exc:
+            if exc.status == 404:
+                return
+            raise
+
     def wait_for_namespace_deletion(self, namespace: str, timeout: int = 600):
         waited = 0
         while waited < timeout:
