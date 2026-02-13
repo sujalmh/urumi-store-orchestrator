@@ -47,27 +47,19 @@ spec:
         resources:
           {{ toYaml .Values.mysql.resources | nindent 10 }}
         livenessProbe:
-          exec:
-            command:
-            - mysqladmin
-            - ping
-            - -h
-            - localhost
-          initialDelaySeconds: 60
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 90
           periodSeconds: 10
           timeoutSeconds: 5
-          failureThreshold: 6
+          failureThreshold: 10
         readinessProbe:
-          exec:
-            command:
-            - mysqladmin
-            - ping
-            - -h
-            - localhost
+          tcpSocket:
+            port: 3306
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
-          failureThreshold: 6
+          failureThreshold: 10
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
