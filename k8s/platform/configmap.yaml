@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: platform-config
+  namespace: platform
+data:
+  APP_REDIS_URL: "redis://platform-redis:6379/0"
+  APP_PUBLIC_IP: "REPLACE_WITH_INGRESS_IP"
+  APP_BASE_DOMAIN: "nip.io"
+  APP_VALUES_PROFILE: "prod"
+  APP_TLS_ENABLED: "false"
+  APP_INGRESS_CLASS_NAME: "nginx"
+  APP_CORS_ORIGINS: "https://your-vercel-app.vercel.app"

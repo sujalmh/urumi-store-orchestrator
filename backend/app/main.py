@@ -27,6 +27,11 @@ def on_startup():
     init_db()
 
 
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
+
 @app.exception_handler(HTTPException)
 def http_exception_handler(_: Request, exc: HTTPException):
     name = HTTPStatus(exc.status_code).phrase if exc.status_code in HTTPStatus._value2member_map_ else "Error"

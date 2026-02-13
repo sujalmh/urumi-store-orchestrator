@@ -1,9 +1,12 @@
+import copy
 import json
 import logging
 import secrets
 import tempfile
 import time
 from datetime import datetime, timezone
+from pathlib import Path
+import yaml
 from typing import Any, cast
 
 from sqlalchemy.orm import Session
@@ -25,6 +28,27 @@ def _random_string(length: int) -> str:
     return "".join(secrets.choice(alphabet) for _ in range(length))
 
 
+def _deep_merge(base: dict, override: dict) -> dict:
+    merged = copy.deepcopy(base)
+    for key, value in override.items():
+        if isinstance(value, dict) and isinstance(merged.get(key), dict):
+            merged[key] = _deep_merge(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
+
+
+def _load_base_values() -> dict:
+    chart_path = Path(settings.resolved_helm_chart_path)
+    profile = settings.values_profile
+    candidate = chart_path / f"values-{profile}.yaml"
+    fallback = chart_path / "values.yaml"
+
+    values_path = candidate if candidate.exists() else fallback
+    with values_path.open("r", encoding="utf-8") as handle:
+        return yaml.safe_load(handle) or {}
+
+
 def _build_values(store: StoreORM) -> dict:
     mysql_password = _random_string(32)
     root_password = _random_string(32)
@@ -43,9 +67,11 @@ def _build_values(store: StoreORM) -> dict:
     tls_enabled = settings.tls_enabled
     if store.domain.endswith(".localtest.me") or store.domain.endswith(".localhost"):
         tls_enabled = False
+    if store.domain.endswith(".nip.io") or store.domain.endswith(".sslip.io"):
+        tls_enabled = False
     scheme = "https" if tls_enabled else "http"
 
-    return {
+    dynamic_values = {
         "storeName": store.name,
         "storeId": str(store.id),
         "domain": store.domain,
@@ -55,8 +81,6 @@ def _build_values(store: StoreORM) -> dict:
             "database": "woocommerce",
             "user": "woocommerce",
             "password": mysql_password,
-            "storage": "20Gi",
-            "storageClass": settings.storage_class_name,
         },
         "wordpress": {
             "adminUser": "admin",
@@ -64,16 +88,16 @@ def _build_values(store: StoreORM) -> dict:
             "adminEmail": "admin@example.com",
             "siteTitle": store.name,
             "siteUrl": f"{scheme}://{store.domain}",
-            "storage": "30Gi",
-            "storageClass": settings.storage_class_name,
             "salts": salts,
         },
         "ingress": {
-            "className": "traefik",
-            "tls": {"enabled": tls_enabled, "issuer": "letsencrypt-prod"},
+            "className": settings.ingress_class_name,
+            "tls": {"enabled": tls_enabled},
         },
-        "hpa": {"enabled": False},
     }
+
+    base_values = _load_base_values()
+    return _deep_merge(base_values, dynamic_values)
 
 
 def _write_values(values: dict) -> str:

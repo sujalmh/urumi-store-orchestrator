@@ -22,7 +22,11 @@ class Settings(BaseSettings):
             path = BASE_DIR / path
         return str(path.resolve())
     storage_class_name: str = "local-path"
-    tls_enabled: bool = True
+    tls_enabled: bool = False
+    public_ip: str = "127.0.0.1"
+    base_domain: str = "nip.io"
+    values_profile: str = "local"
+    ingress_class_name: str = "traefik"
     cors_origins: str = "http://localhost:3000"
 
     model_config = SettingsConfigDict(env_prefix="APP_", case_sensitive=False, env_file=".env")

@@ -88,6 +88,51 @@ bash scripts/start-all.sh
 START_FRONTEND=1 bash scripts/start-all.sh
 ```
 
+## Deployment Details (Submission)
+
+### Live Endpoints
+
+- Frontend (Vercel): https://frontend-henna-mu-66.vercel.app/
+- Backend API (GKE + Ingress): http://api.34.47.223.43.nip.io
+
+### Store URL Pattern
+
+Stores are routed via nip.io (HTTP only):
+
+```
+http://<store-slug>.34.47.223.43.nip.io
+```
+
+### GKE Deployment Summary
+
+- Cluster: `urumi-gke` (asia-south1-a)
+- Ingress: nginx (LoadBalancer IP `34.47.223.43`)
+- Platform namespace: `platform`
+- Backend image: `asia-south1-docker.pkg.dev/urumi-487318/urumi/backend:latest`
+- Data layer: Postgres + Redis in-cluster (StatefulSet/Deployment)
+
+### Vercel Setup
+
+Vercel is configured to proxy API calls to the HTTP backend (avoids mixed-content issues):
+
+- Frontend calls: `/api/proxy/*`
+- Proxy target env: `API_TARGET=http://api.34.47.223.43.nip.io`
+
+### Platform Env (GKE)
+
+Set via `platform-config` ConfigMap and `platform-secrets` Secret:
+
+- `APP_PUBLIC_IP=34.47.223.43`
+- `APP_BASE_DOMAIN=nip.io`
+- `APP_VALUES_PROFILE=prod`
+- `APP_TLS_ENABLED=false`
+- `APP_INGRESS_CLASS_NAME=nginx`
+
+### TLS Later (Optional)
+
+If a real domain is available, enable TLS using cert-manager and switch
+store URLs to `https://<slug>.<domain>`.
+
 ## API Surface (Core)
 
 - `POST /auth/register`

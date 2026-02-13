@@ -17,7 +17,7 @@ export interface StoreDetails extends Store {
 
 export interface CreateStoreRequest {
   name: string;
-  domain: string;
+  domain?: string;
 }
 
 export interface HealthStatus {

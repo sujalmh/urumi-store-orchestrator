@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, get_store_for_user, rate_limit_dependency
+from app.core.config import settings
 from app.db.session import get_db
 from app.models.store import StoreORM
 from app.models.user import UserORM
@@ -29,10 +30,18 @@ def create_store(
     current_user: UserORM = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    slug = request.name
+    domain = f"{slug}.{settings.public_ip}.{settings.base_domain}"
+    if request.domain and request.domain != domain:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Domain must be {domain} for nip.io routing",
+        )
+
     if not check_quota(db, current_user.id, current_user.store_quota):
         raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Quota exceeded")
 
-    existing = db.query(StoreORM).filter(StoreORM.domain == request.domain).first()
+    existing = db.query(StoreORM).filter(StoreORM.domain == domain).first()
     if existing:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Domain already in use")
 
@@ -40,8 +49,8 @@ def create_store(
     store = StoreORM(
         id=store_id,
         user_id=current_user.id,
-        name=request.name,
-        domain=request.domain,
+        name=slug,
+        domain=domain,
         namespace=f"store-{store_id}",
         status=StoreStatus.PENDING.value,
         helm_release_name=f"store-{store_id}",

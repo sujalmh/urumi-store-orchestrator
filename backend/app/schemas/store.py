@@ -5,6 +5,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.core.config import settings
+
 
 class StoreStatus(str, Enum):
     PENDING = "Pending"
@@ -15,7 +17,7 @@ class StoreStatus(str, Enum):
 
 class CreateStoreRequest(BaseModel):
     name: str = Field(min_length=3, max_length=63, pattern=r"^[a-z0-9-]+$")
-    domain: str = Field(pattern=r"^[a-z0-9.-]+\.[a-z]{2,}$")
+    domain: Optional[str] = Field(default=None, pattern=r"^[a-z0-9.-]+\.[a-z]{2,}$")
 
 
 class StoreResponse(BaseModel):
@@ -28,7 +30,11 @@ class StoreResponse(BaseModel):
 
     @staticmethod
     def _scheme(domain: str) -> str:
+        if not settings.tls_enabled:
+            return "http"
         if domain.endswith(".localtest.me") or domain.endswith(".localhost"):
+            return "http"
+        if domain.endswith(".nip.io") or domain.endswith(".sslip.io"):
             return "http"
         return "https"
 

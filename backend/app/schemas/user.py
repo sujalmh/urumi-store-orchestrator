@@ -7,7 +7,7 @@ from pydantic.config import ConfigDict
 class User(BaseModel):
     id: str
     email: EmailStr
-    store_quota: int = 5
+    store_quota: int = 3
     created_at: datetime
     updated_at: datetime
 

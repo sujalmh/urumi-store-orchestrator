@@ -1,0 +1,73 @@
+storeName: "my-store"
+storeId: "uuid-here"
+domain: "store1.203.0.113.10.nip.io"
+
+namespace:
+  name: "store-uuid-here"
+
+resourceQuota:
+  cpu: "1"
+  memory: "1Gi"
+  storage: "30Gi"
+  pods: "10"
+
+limitRange:
+  defaultCpu: "200m"
+  defaultMemory: "256Mi"
+  maxCpu: "1"
+  maxMemory: "1Gi"
+
+mysql:
+  image: "mysql:8.0"
+  rootPassword: "generated-random-password"
+  database: "woocommerce"
+  user: "woocommerce"
+  password: "generated-random-password"
+  storage: "15Gi"
+  storageClass: "standard-rwo"
+  resources:
+    requests:
+      cpu: "150m"
+      memory: "384Mi"
+    limits:
+      cpu: "700m"
+      memory: "768Mi"
+
+wordpress:
+  image: "wordpress:6.8.0-php8.2-apache"
+  wpCliImage: "wordpress:cli-2.10.0-php8.2"
+  siteTitle: "Woo Store"
+  siteUrl: "http://store1.203.0.113.10.nip.io"
+  storage: "15Gi"
+  storageClass: "standard-rwo"
+  adminUser: "admin"
+  adminPassword: "generated-random-password"
+  adminEmail: "admin@example.com"
+  salts:
+    authKey: "generated-random-salt"
+    secureAuthKey: "generated-random-salt"
+    loggedInKey: "generated-random-salt"
+    nonceKey: "generated-random-salt"
+    authSalt: "generated-random-salt"
+    secureAuthSalt: "generated-random-salt"
+    loggedInSalt: "generated-random-salt"
+    nonceSalt: "generated-random-salt"
+  resources:
+    requests:
+      cpu: "150m"
+      memory: "384Mi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+
+ingress:
+  className: "nginx"
+  tls:
+    enabled: false
+    issuer: "letsencrypt-prod"
+
+hpa:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
