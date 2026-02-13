@@ -13,3 +13,13 @@ env/
 venv/
 .env
 .pytest_cache/
+node_modules/
+.next/
+*.log
+# Documentation files (exclude unnecessary ones)
+documentation.md
+documentation.pdf
+design.md
+mvp-plan.md
+requirements.md
+tasks.md
